@@ -1,5 +1,7 @@
 pi = 3.141592
+import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import animation
 import math
 
 initialPos1 = [2, 0];
@@ -74,6 +76,10 @@ for index in range (0,9999):
 
 
 #plot
+
+fig = plt.figure()
+ax = plt.axes(xlim=(-6, 6), ylim=(-6, 6))
+line, = ax.plot([], [], lw=2)
 
 plt.plot(initialPos1[0],initialPos1[1]);
 plt.plot(initialPos2[0],initialPos2[1]);
