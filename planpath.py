@@ -2,8 +2,8 @@ pi = 3.141592
 import matplotlib.pyplot as plt
 import math
 
-initialPos1 = [1.5, 0];
-initialPos2 = [5, -2];
+initialPos1 = [2, 0];
+initialPos2 = [4, 0];
 
 wavex = [0] * 10000
 wavey = [0] * 10000
@@ -46,12 +46,12 @@ for index in range (0,9999):
 # Find angle from path to hand
 for index in range (0,9999):
     pureangle1[index] = math.atan((wavey[index] - initialPos1[1]) / abs(wavex[index] - initialPos1[0]));
-    if(wavex[index] - initialPos1[1] < 0): # adjustment based on arctan discontinuity
+    if(wavex[index] - initialPos1[0] < 0): # adjustment based on arctan discontinuity
        pureangle1[index] = pi - pureangle1[index];
 
 for index in range (0,9999):
     pureangle2[index] = math.atan((wavey[index] - initialPos2[1]) / abs(wavex[index] - initialPos2[0]));
-    if(wavex[index] - initialPos2[1] < 0): # adjustment based on arctan discontinuity
+    if(wavex[index] - initialPos2[0] < 0): # adjustment based on arctan discontinuity
        pureangle2[index] = pi - pureangle2[index];
 
 
