@@ -1,0 +1,92 @@
+initialPos1 = [1.5 0];
+initialPos2 = [5 -2];
+
+wavex  = zeros(10000,1);
+wavey  = zeros(10000,1);
+waveangle = zeros(10000,1);
+distance1  = zeros(10000,1);
+distance2  = zeros(10000,1);
+
+% Angle between path point and grip point
+pureangle1 = zeros(10000,1);
+pureangle2 = zeros(10000,1);
+
+% Adjusted Angle between path point and grip point to be written
+angle1 = zeros(10000,1);
+angle2 = zeros(10000,1);
+
+
+path1x = zeros(9999,1);
+path1y = zeros(9999,1);
+path2x = zeros(9999,1);
+path2y = zeros(9999,1);
+
+%Generate line
+for index = 1:10000
+    wavey(index) = sin(index/(10000/(2*pi)));
+    wavex(index) = index/(10000/(2*pi));
+end
+initialslope = (wavey(2) - wavey(1)) / (wavex(2) - wavex(1));
+
+%Generate Instantanious Slopes
+for index = 1:9999 
+    waveangle(index) = atan((wavey(index+1) - wavey(index)) / (wavex(index+1) - wavex(index)));
+end
+
+
+
+%Find Distance from path to hand
+for index = 1:9999 
+    distance1(index) = sqrt((wavey(index) - initialPos1(2))^2 + (wavex(index) - initialPos1(1))^2);
+end
+for index = 1:9999 
+    distance2(index) = sqrt((wavey(index) - initialPos2(2))^2 + (wavex(index) - initialPos2(1))^2);
+end
+
+% Find angle from path to hand
+for index = 1:9999 
+    pureangle1(index) = atan((wavey(index) - initialPos1(2)) / abs(wavex(index) - initialPos1(1)));
+    if(wavex(index) - initialPos1(1) < 0) % adjustment based on arctan discontinuity
+       pureangle1(index) = pi - pureangle1(index);
+    end
+end
+for index = 1:9999 
+    pureangle2(index) = atan((wavey(index) - initialPos2(2)) / abs(wavex(index) - initialPos2(1)));
+    if(wavex(index) - initialPos2(1) < 0) % adjustment based on arctan discontinuity
+       pureangle2(index) = pi - pureangle2(index);
+    end
+end
+
+% Find angle to write
+for index = 1:9999
+    angle1(index) = -(3*pi/4 - pureangle1(index) - waveangle(index));
+end
+for index = 1:9999
+    angle2(index) = -(3*pi/4 - pureangle2(index) - waveangle(index));
+end
+
+
+
+%Create Path 1
+for index = 1:9999
+    path1x(index) = distance1(index)*cos(angle1(index));
+    path1y(index) = distance1(index)*sin(angle1(index));
+end
+
+for index = 1:9999
+    path2x(index) = distance2(index)*cos(angle2(index));
+    path2y(index) = distance2(index)*sin(angle2(index));
+end
+
+%plot
+figure
+hold on;
+plot(wavex,wavey);
+
+plot(initialPos1(1),initialPos1(2),'r*');
+plot(initialPos2(1),initialPos2(2),'r*');
+plot(path1x,path1y);
+plot(path2x,path2y);
+
+axis equal;
+hold off;
