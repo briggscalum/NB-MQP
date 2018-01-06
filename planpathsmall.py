@@ -6,6 +6,17 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import math
 
+Writer = animation.writers['ffmpeg']
+writer = Writer(fps=30, metadata=dict(artist='Me'), bitrate=100000)
+fig, ax = plt.subplots()
+
+theta = np.radians(90)
+c, s = np.cos(theta), np.sin(theta)
+R = np.matrix('{} {}; {} {}'.format(c, -s, s, c))
+
+distance = [0] * 100
+frames = [[]]
+
 initialPos1 = [2, 0];
 initialPos2 = [4, 0];
 
@@ -38,6 +49,9 @@ for index in range (0,100):
 for index in range (0,99):
 	waveangle[index] = math.atan((wavey[index+1] - wavey[index]) / (wavex[index+1] - wavex[index]));
 
+# Generate Instantanious Distances
+for index in range (1,100):
+	distance[index] = math.hypot(wavex[index] - wavex[index-1], wavey[index]- wavey[index-1]);
 
 # Find Distance from path to hand
 for index in range (0,99):
@@ -85,30 +99,44 @@ ratio = 0;
 minidistx = 0;
 minidisty = 0;
 
-for index in range (0,99):
-   	sewpathx[index]= math.hypot(wavex[index] - wavex[index-1], wavey[index]- wavey[index-1]);
-	sewpathy[index]= 0;
-	for j in range (1, index): 
-		ratio = math.hypot(path1x[j], path1y[j]) / math.hypot(sewpathx[j], sewpathy[j])
-		minidistx = path1x[j] - path1x[j-1]
-		minidisty = path1y[j] - path1y[j-1]
-		sewpathx[j] = sewpathx[j] + minidistx * ratio + math.hypot(wavex[index] - wavex[index-1], wavey[index]- wavey[index-1]);
-		sewpathy[j] = sewpathy[j] + minidisty * ratio
-	
-#plot
-
-fig = plt.figure()
-#ax = plt.axes(xlim=(-3, 11), ylim=(-6, 6))
-#line, = ax.plot([], [], lw=2)
-
-plt.plot(initialPos1[0],initialPos1[1]);
-plt.plot(initialPos2[0],initialPos2[1]);
-plt.plot(path1x,path1y);
-plt.plot(path2x,path2y);
-plt.plot(sewpathx,sewpathy);
+for index in range (0,100):
+	oldtheta = theta;
+	theta = waveangle[index]
+	c, s = np.cos(theta - oldtheta), np.sin(theta - oldtheta)
+	R = np.matrix('{} {}; {} {}'.format(c, -s, s, c))
+	#print R
+   	for j in range (0, index+1): 
+		newxy = np.cross(R,np.array((sewpathx[j],sewpathy[j] + distance[index])))
+		sewpathx[j] = -newxy[1]
+		sewpathy[j] = newxy[0]
+	frames.append(plt.Line2D(sewpathx[0:index],sewpathy[0:index]));
 
 
-offsetwavex = [x+3 for x in wavex]
-plt.plot(offsetwavex, wavey)
+line = plt.Line2D([0,0],[0,0], color = 'm')
+line.set_data(frames[35].get_data())
+
+ax.set_xlim([-5,5])
+ax.set_ylim([-5,5])
+
+x = np.arange(0, 2*np.pi, 0.01)
+line, = ax.plot(x, np.sin(x))
+
+
+def animate(i):
+    line.set_ydata(frames[i].get_ydata())  # update the data
+    line.set_xdata(frames[i].get_xdata())  # update the data
+    return line,
+
+
+# Init only required for blitting to give a clean slate.
+def init():
+    line.set_ydata(np.ma.array(x, mask=True))
+    return line,
+
+ani = animation.FuncAnimation(fig, animate, np.arange(4, 100), init_func=init,
+                              interval=100, blit=True)
+
+ani = animation.FuncAnimation(fig, animate, np.arange(4, 100), init_func=init, interval=50, blit=True)
+
+#ani.save('SewPath.mp4', writer=writer)
 plt.show()
-
