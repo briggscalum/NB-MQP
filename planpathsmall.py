@@ -45,7 +45,7 @@ path2y = [0] * 99
 
 # Generate line
 for index in range (0,100):
-	wavey[index] = math.sin(index/(100/(2*pi)))
+	wavey[index] = math.cos(index/(100/(2*pi)))
 	wavex[index] = index/(100/(2*pi))
 
 # Generate Instantanious Slopes
@@ -152,9 +152,9 @@ def init():
     line.set_ydata(np.ma.array(x, mask=True))
     return line,line2,line3,
 
-ani = animation.FuncAnimation(fig, animate, np.arange(1, 100), init_func=init,interval=100, blit=True)
+ani = animation.FuncAnimation(fig, animate, np.arange(1, 100), init_func=init,interval=150, blit=True)
 
 #ani = animation.FuncAnimation(fig, animate, np.arange(4, 100), init_func=init, interval=50, blit=True)
 
-ani.save('SewPath.mp4', writer=writer)
+#ani.save('SewPath.mp4', writer=writer)
 plt.show()
