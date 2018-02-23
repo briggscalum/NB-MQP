@@ -1,12 +1,11 @@
-
-
 pi = 3.141592
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import math
 from math import cos, sin
-import trial2
+import vision
 
 
 Writer = animation.writers['ffmpeg']
@@ -17,7 +16,6 @@ theta = np.radians(90)
 c, s = np.cos(theta), np.sin(theta)
 R = np.matrix('{} {}; {} {}'.format(c, -s, s, c))
 
-
 frames = [[]]
 frames2 = [[]]
 frames3 = [[]]
@@ -25,34 +23,27 @@ frames3 = [[]]
 initialPos1 = [400, 0];
 initialPos2 = [300, 0];
 
-
-
-
 # Generate line
 
+curve_name = 'sinecurve3.png'
+wavex,wavey = vision.load_and_show(curve_name)
 
-curve_name="sinecurve3.png"
-wavex,wavey=trial2.load_and_show(curve_name)
+wavey = wavey / 100.0
+wavex = wavex / 100.0
 
-# plt.plot(wavex,wavey)
-# plt.show()
 length=(len(wavex))
 
-
-# print(wavey)
-# print(wavex)
 wavex=np.flip(wavex,0)
 wavey=np.flip(wavey,0)
 wavex=wavex[0:length-1:1]
 wavey=wavey[0:length-1:1]
-# plt.plot(wavex,wavey)
-# plt.show()
+
 print(wavex)
 print(wavey)
-# wavex = [0] * length
-# wavey = [0] * length
+
 length=len(wavey)
 waveangle = [0] * length
+
 # Angle between path point and grip point
 pureangle1 = [0] * length
 pureangle2 = [0] * length
@@ -61,14 +52,10 @@ pureangle2 = [0] * length
 angle1 = [0] * length
 angle2 = [0] * length
 distance = [0] * length
-# Generate line
-# for index in range (0,100):
-# 	wavey[index] = math.cos(index/(100/(2*pi)))
-# 	wavex[index] = index/(100/(2*pi))
 
 # Generate Instantanious Slopes
 for index in range (0,length-1):
-	waveangle[index] = math.atan((wavey[index+1] - wavey[index]) / (wavex[index+1] - wavex[index]));
+	waveangle[index] = np.arctan2((wavex[index+1] - wavex[index]) , (wavey[index+1] - wavey[index]));
 
 # Generate Instantanious Distances
 for index in range (1,length):
@@ -97,8 +84,8 @@ for index in range (0,length):
 line = plt.Line2D([0,0],[0,0], color = 'm')
 line.set_data(frames[35].get_data())
 
-ax.set_xlim([-300,1000])
-ax.set_ylim([-1000,4000])
+ax.set_xlim([-10,10])
+ax.set_ylim([-10,10])
 
 x = np.arange(0, 2*np.pi, 2*np.pi/length)
 line, = ax.plot(x, np.sin(x))

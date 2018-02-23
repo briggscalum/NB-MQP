@@ -14,6 +14,9 @@ theta = np.radians(90)
 c, s = np.cos(theta), np.sin(theta)
 R = np.matrix('{} {}; {} {}'.format(c, -s, s, c))
 
+
+
+
 distance = [0] * 100
 frames = [[]]
 frames2 = [[]]
@@ -34,15 +37,14 @@ pureangle2 = [0] * 100
 angle1 = [0] * 100
 angle2 = [0] * 100
 
-
 # Generate line
 for index in range (0,100):
-	wavey[index] = math.cos(index/(100/(2*pi)))
-	wavex[index] = index/(100/(2*pi))
+	wavey[index] = math.sin(index/(100/(2*pi)))
+	wavex[index] = math.cos(index/(100/(2*pi)))
 
 # Generate Instantanious Slopes
 for index in range (0,99):
-	waveangle[index] = math.atan((wavey[index+1] - wavey[index]) / (wavex[index+1] - wavex[index]));
+	waveangle[index] = np.arctan2((wavey[index+1] - wavey[index]) , (wavex[index+1] - wavex[index]));
 
 # Generate Instantanious Distances
 for index in range (1,100):
