@@ -23,10 +23,19 @@ frames3 = [[]]
 initialPos1 = [400, 0]
 initialPos2 = [300, 0]
 
-canvassize = [0.3,0.2]
+canvassize = [0.2,0.3]
 
-hand1pos = [0.1, 0.1]
-hand2pos = [0.2, 0.2]
+hand1pos = [0.1, 0.05]
+hand2pos = [0.1, -0.05]
+
+
+#calculate intital distance and angle
+intialdist1 =  math.hypot(hand1pos[1], canvassize[0]/2 -hand1pos[0])
+intialdist2 =  math.hypot(hand2pos[1], canvassize[0]/2 -hand2pos[0])
+
+intialangle1 =	np.arctan2(( canvassize[0]/2 -hand1pos[0]) , (hand1pos[1]));
+intialangle2 =  np.arctan2(( canvassize[0]/2 -hand2pos[0]) , (hand2pos[1]));
+
 
 # Generate line
 
@@ -46,6 +55,7 @@ for xval in wavex:
 	if wavex[i] < minx:
 		minx = wavex[i]
 	i = i +1
+
 	
 
 
@@ -63,13 +73,13 @@ for yval in wavey:
 
 i = 0
 for xval in wavex:
-	wavex[i] = ((wavex[i]) - (minx)) * (canvassize[0] /  (maxx-minx))
+	wavex[i] = ((wavex[i]) - (minx)) * (canvassize[0] /  (maxx-minx)) - canvassize[0]/2 
 	i = i + 1
 
 
 i = 0
 for yval in wavey:
-	wavey[i] = ((wavey[i]) - (miny)) * (canvassize[1] /  (maxy-miny))
+	wavey[i] = ((wavey[i]) - (miny)) * (canvassize[1] /  (maxy-miny)) 
 	i = i + 1
 
 
@@ -120,8 +130,8 @@ for index in range (0,length):
 		sewpathx[j] = -newxy[1]
 		sewpathy[j] = newxy[0]
 	frames.append(plt.Line2D(sewpathx[0:index],sewpathy[0:index]));
-	frames2.append(plt.Line2D([sewpathx[0]-0.1*math.cos(waveangle[index] - pi/2) , 7],[sewpathy[0]-0.1*math.sin(waveangle[index] - pi/2) , 0]));
-	frames3.append(plt.Line2D([sewpathx[0]+0.1*math.cos(waveangle[index] - pi/2) , -7],[sewpathy[0]+0.1*math.sin(waveangle[index] - pi/2) , 0]));
+	frames2.append(plt.Line2D([sewpathx[0]+intialdist1*math.cos(waveangle[index] + intialangle1 - pi/4) , 0.7], [sewpathy[0]+intialdist1*math.sin(waveangle[index] + intialangle1 - pi/4) , 0]));
+	frames3.append(plt.Line2D([sewpathx[0]+intialdist2*math.cos(waveangle[index] + intialangle2 - pi/4) , -0.7],[sewpathy[0]+intialdist2*math.sin(waveangle[index] + intialangle2 - pi/4) , 0]));
 
 line = plt.Line2D([0,0],[0,0], color = 'm')
 line.set_data(frames[35].get_data())
