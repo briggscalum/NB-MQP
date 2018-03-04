@@ -25,8 +25,8 @@ initialPos2 = [300, 0]
 
 canvassize = [0.2,0.3]
 
-hand1pos = [0.1, 0.05]
-hand2pos = [0.1, -0.05]
+hand1pos = [0, 0]
+hand2pos = [0.2, 0.3]
 
 
 #calculate intital distance and angle
