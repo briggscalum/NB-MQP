@@ -71,8 +71,8 @@ def skeletonization(img):
 	    if zeros==size:
 	        done = True
 	 
-	cv2.imshow("skel",skel)
-	cv2.waitKey(0)
+	#cv2.imshow("skel",skel)
+	#cv2.waitKey(0)
 	return skel
 	
 	# cv2.destroyAllWindows()
@@ -83,20 +83,20 @@ def skeletonization(img):
 def load_and_show(img_in):
 	# img_in="sinecurve3.png"
 	image=cv2.imread(img_in,0)
-	cv2.imshow('original_image',image)
-	cv2.waitKey(0)
+	#cv2.imshow('original_image',image)
+	#cv2.waitKey(0)
 	binary_image=threshold_image(image)
 	cv2.bitwise_not(binary_image,binary_image)
-	cv2.imshow('binary',binary_image)
-	cv2.waitKey(0)
+	#cv2.imshow('binary',binary_image)
+	#cv2.waitKey(0)
 	print(binary_image)
 	print(np.shape(binary_image))
 	# edges = cv2.Canny(binary_image,100,200)
 	# plt.imshow(edges,cmap = 'gray')
 	# plt.show()
 	skel=skeletonization(binary_image)
-	cv2.imshow('skeleton',skel)
-	cv2.waitKey(0)
+	#cv2.imshow('skeleton',skel)
+	#cv2.waitKey(0)
 	# skel2=skeleton(skel)
 	# blur = cv2.GaussianBlur(skel,(5,5),0)
 	# cv2.imshow('smooth',blur)
