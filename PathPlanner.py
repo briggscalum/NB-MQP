@@ -20,13 +20,11 @@ frames = [[]]
 frames2 = [[]]
 frames3 = [[]]
 
-initialPos1 = [400, 0]
-initialPos2 = [300, 0]
 
 canvassize = [0.2,0.3]
 
-hand1pos = [0, 0]
-hand2pos = [0.2, 0.3]
+hand1pos = [0,0.1]
+hand2pos = [-0.04, 0.23]
 
 
 #calculate intital distance and angle
@@ -39,11 +37,18 @@ intialangle2 =  np.arctan2(( canvassize[0]/2 -hand2pos[0]) , (hand2pos[1]));
 
 # Generate line
 
-curve_name = 'sinecurve3.png'
-wavex,wavey = vision.load_and_show(curve_name)
+# curve_name = 'sinecurve3.png'
+# wavex,wavey = vision.load_and_show(curve_name)
 
-wavex = np.asfarray(wavex)
-wavey = np.asfarray(wavey)
+# wavex = np.asfarray(wavex)
+# wavey = np.asfarray(wavey)
+
+wavex = [0] * 100;
+wavey = [0] * 100;
+
+for index in range (0,100):
+	wavey[index] = math.sin(index/(100/(2*pi)))
+	wavex[index] = (index)
 
 maxx = 0
 minx = wavex[0]
@@ -116,22 +121,46 @@ for index in range (1,length):
 # Create Drawn Path
 sewpathx  = [0] * length
 sewpathy  = [0] * length
+hand1pathx = [0] * length
+hand1pathy = [0] * length
+hand2pathx = [0] * length
+hand2pathy = [0] * length
 ratio = 0;
 minidistx = 0;
 minidisty = 0;
+
 
 for index in range (0,length):
 	oldtheta = theta;
 	theta = waveangle[index]
 	c, s = np.cos(theta - oldtheta), np.sin(theta - oldtheta)
 	R = np.matrix('{} {}; {} {}'.format(c, -s, s, c))
+	
+	if (index > 0):
+		newhand1path = np.cross(R,np.array((hand1pathx[index-1],hand1pathy[index-1] + distance[index-1])))
+		newhand2path = np.cross(R,np.array((hand2pathx[index-1],hand2pathy[index-1] + distance[index-1])))
+	else:
+		newhand1path = np.cross(R,np.array((hand1pos[0],hand1pos[1] + distance[index-1])))
+		newhand2path = np.cross(R,np.array((hand2pos[0],hand2pos[1] + distance[index-1])))
+
+	hand1pathx[index] = -newhand1path[1];
+	hand1pathy[index] = newhand1path[0];
+
+	hand2pathx[index] = -newhand2path[1];
+	hand2pathy[index] = newhand2path[0];
+
+
 	for j in range (0, index+1): 
 		newxy = np.cross(R,np.array((sewpathx[j],sewpathy[j] + distance[index])))
 		sewpathx[j] = -newxy[1]
 		sewpathy[j] = newxy[0]
 	frames.append(plt.Line2D(sewpathx[0:index],sewpathy[0:index]));
-	frames2.append(plt.Line2D([sewpathx[0]+intialdist1*math.cos(waveangle[index] + intialangle1 - pi/4) , 0.7], [sewpathy[0]+intialdist1*math.sin(waveangle[index] + intialangle1 - pi/4) , 0]));
-	frames3.append(plt.Line2D([sewpathx[0]+intialdist2*math.cos(waveangle[index] + intialangle2 - pi/4) , -0.7],[sewpathy[0]+intialdist2*math.sin(waveangle[index] + intialangle2 - pi/4) , 0]));
+	frames2.append(plt.Line2D(hand1pathx[0:index],hand1pathy[0:index]));
+	frames3.append(plt.Line2D(hand2pathx[0:index],hand2pathy[0:index]));
+
+
+	#frames2.append(plt.Line2D([sewpathx[0]+intialdist1*math.cos(waveangle[index] + intialangle1 - pi/4) , 0.7], [sewpathy[0]+intialdist1*math.sin(waveangle[index] + intialangle1 - pi/4) , 0]));
+	#frames3.append(plt.Line2D([sewpathx[0]+intialdist2*math.cos(waveangle[index] + intialangle2 - pi/4) , -0.7],[sewpathy[0]+intialdist2*math.sin(waveangle[index] + intialangle2 - pi/4) , 0]));
 
 line = plt.Line2D([0,0],[0,0], color = 'm')
 line.set_data(frames[35].get_data())
@@ -159,9 +188,15 @@ def init():
 	line.set_ydata(np.ma.array(x, mask=True))
 	return line,line2,line3,
 
-ani = animation.FuncAnimation(fig, animate, np.arange(1, length), init_func=init,interval=150, blit=True)
-
-#ani = animation.FuncAnimation(fig, animate, np.arange(4, 100), init_func=init, interval=50, blit=True)
+ani = animation.FuncAnimation(fig, animate, np.arange(1, length), init_func=init,interval=100, blit=True)
 
 #ani.save('SewPath.mp4', writer=writer)
+
+
+plt.plot(wavex,wavey);
+ax.plot(hand1pos[0],hand1pos[1], marker='o', markersize=3, color="red")
+ax.plot(hand2pos[0],hand2pos[1], marker='o', markersize=3, color="green")
 plt.show()
+
+
+
