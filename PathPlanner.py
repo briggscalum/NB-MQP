@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import math
+from scaleplot import scaleplot
 from math import cos, sin
 import vision
 
@@ -48,45 +49,10 @@ wavey = [0] * 100;
 
 for index in range (0,100):
 	wavey[index] = math.sin(index/(100/(2*pi)))
-	wavex[index] = (index)
+	wavex[index] = float(index)
 
-maxx = 0
-minx = wavex[0]
-i = 0
-for xval in wavex:
-	if wavex[i] > maxx:
-		maxx = wavex[i]
-	
-	if wavex[i] < minx:
-		minx = wavex[i]
-	i = i +1
-
-	
-
-
-maxy = 0.0
-miny = wavey[0]
-
-i = 0
-for yval in wavey:
-	if wavey[i] > maxy:
-		maxy = wavey[i]
-
-	if wavey[i] < miny:
-		miny = wavey[i]
-	i = i + 1	
-
-i = 0
-for xval in wavex:
-	wavex[i] = ((wavex[i]) - (minx)) * (canvassize[0] /  (maxx-minx)) - canvassize[0]/2 
-	i = i + 1
-
-
-i = 0
-for yval in wavey:
-	wavey[i] = ((wavey[i]) - (miny)) * (canvassize[1] /  (maxy-miny)) 
-	i = i + 1
-
+#print wavex
+wavex, wavey = scaleplot(wavex,wavey,canvassize)
 
 length=(len(wavex))
 
