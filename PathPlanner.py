@@ -1,10 +1,9 @@
-pi = 3.141592
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import math
-from scaleplot import scaleplot
+from changeplot import scaleplot, rotateplot
 from math import cos, sin
 import vision
 
@@ -13,13 +12,14 @@ Writer = animation.writers['ffmpeg']
 writer = Writer(fps=30, metadata=dict(artist='Me'), bitrate=100000)
 fig, ax = plt.subplots()
 
-theta = np.radians(90)
+theta = np.radians(-90)
 c, s = np.cos(theta), np.sin(theta)
 R = np.matrix('{} {}; {} {}'.format(c, -s, s, c))
 
 frames = [[]]
 frames2 = [[]]
 frames3 = [[]]
+frames4 = [[]]
 
 
 canvassize = [0.2,0.3]
@@ -44,11 +44,11 @@ intialangle2 =  np.arctan2(( canvassize[0]/2 -hand2pos[0]) , (hand2pos[1]));
 # wavex = np.asfarray(wavex)
 # wavey = np.asfarray(wavey)
 
-wavex = [0] * 100;
-wavey = [0] * 100;
+wavex = [0] * 500;
+wavey = [0] * 500;
 
-for index in range (0,100):
-	wavey[index] = math.sin(index/(100/(2*pi)))
+for index in range (0,500):
+	wavey[index] = math.sin(index/(500/(2*math.pi)))
 	wavex[index] = float(index)
 
 #print wavex
@@ -60,9 +60,6 @@ length=(len(wavex))
 # wavey=np.flip(wavey,0)
 # wavex=wavex[0:length-1:1]
 # wavey=wavey[0:length-1:1]
-
-print(wavex)
-print(wavey)
 
 length=len(wavey)
 waveangle = [0] * length
@@ -91,9 +88,23 @@ hand1pathx = [0] * length
 hand1pathy = [0] * length
 hand2pathx = [0] * length
 hand2pathy = [0] * length
-ratio = 0;
-minidistx = 0;
-minidisty = 0;
+
+hand1pos[0] = cos(hand1pos[0]- waveangle[0] - np.arctan2((wavex[0] - hand1pos[0]) , (wavey[0] - hand1pos[1])));
+hand1pos[1] = sin(hand1pos[0]- waveangle[0] - np.arctan2((wavex[0] - hand1pos[0]) , (wavey[0] - hand1pos[1])));
+
+
+hand2pos[0] = cos(hand2pos[0]- waveangle[0] - np.arctan2((wavex[0] - hand1pos[0]) , (wavey[0] - hand2pos[1])));
+hand2pos[1] = sin(hand2pos[0]- waveangle[0] - np.arctan2((wavex[0] - hand1pos[0]) , (wavey[0] - hand2pos[1])));
+
+# hand2offsetx
+# hand2offsety
+
+newhand1path = {0.0,0.0}
+newhand2path = {0.0,0.0}
+# hand1pathx[0] = hand1pos[0]
+# hand1pathy[0] = hand1pos[1]
+# hand2pathx[0] = hand2pos[0]
+# hand2pathy[0] = hand2pos[1]
 
 
 for index in range (0,length):
@@ -106,8 +117,8 @@ for index in range (0,length):
 		newhand1path = np.cross(R,np.array((hand1pathx[index-1],hand1pathy[index-1] + distance[index-1])))
 		newhand2path = np.cross(R,np.array((hand2pathx[index-1],hand2pathy[index-1] + distance[index-1])))
 	else:
-		newhand1path = np.cross(R,np.array((hand1pos[0],hand1pos[1] + distance[index-1])))
-		newhand2path = np.cross(R,np.array((hand2pos[0],hand2pos[1] + distance[index-1])))
+		newhand1path = np.cross(R,np.array((hand1pos[0],hand1pos[1])))
+		newhand2path = np.cross(R,np.array((hand2pos[0],hand2pos[1])))
 
 	hand1pathx[index] = -newhand1path[1];
 	hand1pathy[index] = newhand1path[0];
@@ -115,38 +126,39 @@ for index in range (0,length):
 	hand2pathx[index] = -newhand2path[1];
 	hand2pathy[index] = newhand2path[0];
 
+	sewpathx, sewpathy = rotateplot(sewpathx, sewpathy, theta - oldtheta)
 
-	for j in range (0, index+1): 
-		newxy = np.cross(R,np.array((sewpathx[j],sewpathy[j] + distance[index])))
-		sewpathx[j] = -newxy[1]
-		sewpathy[j] = newxy[0]
-	frames.append(plt.Line2D(sewpathx[0:index],sewpathy[0:index]));
-	frames2.append(plt.Line2D(hand1pathx[0:index],hand1pathy[0:index]));
-	frames3.append(plt.Line2D(hand2pathx[0:index],hand2pathy[0:index]));
-
+	for j in range (0, index): 
+		sewpathy[j] = sewpathy[j] + distance[index]
+		
+	frames.append(plt.Line2D(sewpathx[1:index],sewpathy[1:index]))
+	frames2.append(plt.Line2D(hand1pathx[0:index],hand1pathy[0:index]))
+	frames3.append(plt.Line2D(hand2pathx[0:index],hand2pathy[0:index]))
+	#frames4.append(ax.plot(hand1pathx[0:index], hand1pathy[0:index], 'o'))
 
 	#frames2.append(plt.Line2D([sewpathx[0]+intialdist1*math.cos(waveangle[index] + intialangle1 - pi/4) , 0.7], [sewpathy[0]+intialdist1*math.sin(waveangle[index] + intialangle1 - pi/4) , 0]));
 	#frames3.append(plt.Line2D([sewpathx[0]+intialdist2*math.cos(waveangle[index] + intialangle2 - pi/4) , -0.7],[sewpathy[0]+intialdist2*math.sin(waveangle[index] + intialangle2 - pi/4) , 0]));
 
-line = plt.Line2D([0,0],[0,0], color = 'm')
-line.set_data(frames[35].get_data())
+# line = plt.Line2D([0,0],[0,0], color = 'm')
+# line.set_data(frames[35].get_data())
 
+ax.axis('equal')
 ax.set_xlim([-0.5,0.5])
 ax.set_ylim([-0.5,0.5])
 
+
 x = np.arange(0, 2*np.pi, 2*np.pi/length)
-line, = ax.plot(x, np.sin(x))
-line2,  = ax.plot(x, np.sin(x))
-line3,  = ax.plot(x, np.sin(x))
+line, = ax.plot(0, 0)
+line2,  = ax.plot(0, 0)
+line3,  = ax.plot(0, 0)
+point, = ax.plot(0,0, 'o')
 
 def animate(i):
-	line.set_ydata(frames[i].get_ydata())  # update the data
-	line.set_xdata(frames[i].get_xdata())  # update the data
-	line2.set_ydata(frames2[i].get_ydata())  # update the data
-	line2.set_xdata(frames2[i].get_xdata())  # update the data
-	line3.set_ydata(frames3[i].get_ydata())  # update the data
-	line3.set_xdata(frames3[i].get_xdata())  # update the data
-	return line,line2,line3,
+	line.set_data(frames[i].get_data())  # update the data
+	line2.set_data(frames2[i].get_data())  # update the data
+	line3.set_data(frames3[i].get_data())  # update the data
+	#graph.set_data(frames4[i].get_data())
+	return line,line2,line3,point,
 
 
 # Init only required for blitting to give a clean slate.
@@ -154,14 +166,17 @@ def init():
 	line.set_ydata(np.ma.array(x, mask=True))
 	return line,line2,line3,
 
-ani = animation.FuncAnimation(fig, animate, np.arange(1, length), init_func=init,interval=100, blit=True)
+ani = animation.FuncAnimation(fig, animate, np.arange(1, length), init_func=init,interval=50, blit=True)
 
 #ani.save('SewPath.mp4', writer=writer)
 
 
 plt.plot(wavex,wavey);
+
 ax.plot(hand1pos[0],hand1pos[1], marker='o', markersize=3, color="red")
 ax.plot(hand2pos[0],hand2pos[1], marker='o', markersize=3, color="green")
+
+
 plt.show()
 
 
