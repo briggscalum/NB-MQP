@@ -2,6 +2,22 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
+
+def rotatepoint(xdata, ydata, angle):
+
+	c, s = np.cos(angle), np.sin(angle)
+	R = np.matrix('{} {}; {} {}'.format(c, -s, s, c))
+
+	newxy = np.cross(R,np.array((xdata,ydata)))
+	
+	newxdata = -newxy[1]
+	newydata = newxy[0]
+
+	return newxdata, newydata
+
+
+
+
 def rotateplot(xdata, ydata, angle):
 
 	length = len(xdata)
@@ -36,17 +52,33 @@ def scaleplot(xdata, ydata, canvassize):
 	wavey = [0] * len(ydata)
 
 	
+	#Scale Plot
 
 	i = 0
 	for xval in xdata:
-		wavex[i] = ((xdata[i]) - (minx)) * (canvassize[0] /  (maxx-minx)) - canvassize[0]/2 
+		wavex[i] = ((xdata[i]) - (minx)) * (canvassize[0] /  (maxx-minx))
 		i = i + 1
-
-
 	i = 0
 	for yval in ydata:
 		wavey[i] = ((ydata[i]) - (miny)) * (canvassize[1] /  (maxy-miny)) 
 		i = i + 1
+
+	#Shift Plot
+
+	wavex0 = wavex[0]
+	wavey0 = wavey[0]
+	
+	i = 0
+	for xval in wavex:
+		wavex[i] = wavex[i] - wavex0
+		i = i + 1
+	i = 0
+	for yval in wavey:
+		wavey[i] = wavey[i] - wavey0
+		i = i + 1
+
+
+
 
 	return wavex, wavey
 
